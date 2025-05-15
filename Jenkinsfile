@@ -10,7 +10,7 @@ pipeline {
                 }
             }
             steps {
-                esh '''
+                sh '''
                     ls-la
                     node --version
                     npm --version
