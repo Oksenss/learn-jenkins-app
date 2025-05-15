@@ -55,21 +55,10 @@ pipeline {
 
                     steps {
                         sh '''
-                            npm ci
                             npm install serve
-                            npx serve -s build &
-                            SERVE_PID=$!
+                            node_modules/.bin/serve -s build &
                             sleep 10
-                            
-                            # Make sure browsers are installed
-                            npx playwright install --with-deps chromium
-                            
-                            # Run tests with only chromium for speed
-                            npx playwright test --reporter=html --project=chromium
-                            EXIT_CODE=$?
-                            
-                            kill $SERVE_PID || true
-                            exit $EXIT_CODE
+                            npx playwright test  --reporter=html
                         '''
                     }
 
