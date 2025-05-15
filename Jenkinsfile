@@ -48,7 +48,7 @@ pipeline {
                     agent {
                         docker {
                             // Use a smaller, more specific image
-                            image 'mcr.microsoft.com/playwright/node:v1.39.0-focal'
+                            image 'mcr.microsoft.com/playwright:v1.52.0-noble'
                             reuseNode true
                         }
                     }
