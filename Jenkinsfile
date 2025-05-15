@@ -50,8 +50,11 @@ pipeline {
 
             steps {
                 sh '''
+                    ls -la  # Check if build directory exists
+                    npm ci   # Install all dependencies 
                     npm install serve
-                    node_modules/.bin/serve -s build &
+                    npx serve -s build &
+                    SERVE_PID=$!
                     sleep 10
                     npx playwright test --reporter=html
                 '''
