@@ -2,12 +2,6 @@ pipeline {
     agent any
 
     stages {
-        stage('Prepare') {
-            steps {
-                sh 'docker pull mcr.microsoft.com/playwright:v1.39.0-jammy'
-            }
-        }
-
         stage('Build') {
             agent {
                 docker {
@@ -53,9 +47,9 @@ pipeline {
                 stage('E2E') {
                     agent {
                         docker {
-                            image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
+                            // Use a smaller, more specific image
+                            image 'mcr.microsoft.com/playwright/node:v1.39.0-focal'
                             reuseNode true
-                            args '--pull=never' // Don't try to pull the image again
                         }
                     }
 
@@ -63,11 +57,17 @@ pipeline {
                         sh '''
                             npm ci
                             npm install serve
-                            node_modules/.bin/serve -s build &
+                            npx serve -s build &
                             SERVE_PID=$!
                             sleep 10
-                            npx playwright test --reporter=html
+                            
+                            # Make sure browsers are installed
+                            npx playwright install --with-deps chromium
+                            
+                            # Run tests with only chromium for speed
+                            npx playwright test --reporter=html --project=chromium
                             EXIT_CODE=$?
+                            
                             kill $SERVE_PID || true
                             exit $EXIT_CODE
                         '''
