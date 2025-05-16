@@ -94,6 +94,7 @@ pipeline {
                 node_modules/.bin/netlify deploy --dir=build
                 '''
             }
+        }
 
         stage('Deploy prod') {
             agent {
