@@ -22,7 +22,7 @@ pipeline {
                     // some block
                 sh '''
                     aws --version
-                    aws ls s3
+                    aws s3 ls
                 '''
                 }
             }
