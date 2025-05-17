@@ -10,24 +10,6 @@ pipeline {
 
     stages {
 
-        stage('AWS') {
-            agent {
-                docker {
-                    image 'amazon/aws-cli'
-                    args "--entrypoint=''"
-                }
-            }
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'my-aws', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
-                    // some block
-                sh '''
-                    aws --version
-                    echo "Hello S3!" > index.html
-                    aws s3 cp index.html s3://learn-jenkins-and-get-to-work/index.html
-                '''
-                }
-            }
-        }
         stage('Build') {
             agent {
                 docker {
@@ -44,6 +26,24 @@ pipeline {
                     npm run build
                     ls -la
                 '''
+            }
+        }
+        stage('AWS') {
+            agent {
+                docker {
+                    image 'amazon/aws-cli'
+                    args "--entrypoint=''"
+                    reuseNode true
+                }
+            }
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'my-aws', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
+                    // some block
+                sh '''
+                    aws --version
+                    aws s3 sync build s3://learn-jenkins-and-get-to-work
+                '''
+                }
             }
         }
 
